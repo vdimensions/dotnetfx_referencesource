@@ -28,7 +28,15 @@ namespace System.Reflection
     [Serializable]
     public abstract class TypeInfo:Type,IReflectableType
     {
+        #if NET20_OR_NEWER || !(NETSTANDARD || NET45_OR_NEWER)
+        internal const BindingFlags DeclaredOnlyLookup = TypeShim.DeclaredOnlyLookup;
+        #else
+        internal const BindingFlags DeclaredOnlyLookup = Type.DeclaredOnlyLookup;
+        #endif
+        
+        #if (NETSTANDARD || NET45_OR_NEWER)
         [FriendAccessAllowed]
+        #endif
         internal TypeInfo() { }
 
         TypeInfo IReflectableType.GetTypeInfo(){
@@ -65,7 +73,11 @@ namespace System.Reflection
 
             if (this.IsInterface)
             {
+                #if NET20_OR_NEWER || !(NETSTANDARD || NET45_OR_NEWER)
+                TypeShim.ImplementInterface(typeInfo, this);
+                #else
                 return typeInfo.ImplementInterface(this);
+                #endif
             }
             else if (IsGenericParameter)
             {
@@ -84,20 +96,20 @@ namespace System.Reflection
 
         public virtual EventInfo GetDeclaredEvent(String name)
         {
-            return GetEvent(name, Type.DeclaredOnlyLookup);
+            return GetEvent(name, DeclaredOnlyLookup);
         }
         public virtual FieldInfo GetDeclaredField(String name)
         {
-            return GetField(name, Type.DeclaredOnlyLookup);
+            return GetField(name, DeclaredOnlyLookup);
         }
         public virtual MethodInfo GetDeclaredMethod(String name)
         {
-            return GetMethod(name, Type.DeclaredOnlyLookup);
+            return GetMethod(name, DeclaredOnlyLookup);
         }
 
         public virtual IEnumerable<MethodInfo> GetDeclaredMethods(String name)
         {
-            foreach (MethodInfo method in GetMethods(Type.DeclaredOnlyLookup))
+            foreach (MethodInfo method in GetMethods(DeclaredOnlyLookup))
             {
                 if (method.Name == name)
                     yield return method;
@@ -105,7 +117,7 @@ namespace System.Reflection
         }
         public virtual System.Reflection.TypeInfo GetDeclaredNestedType(String name)
         {
-            var nt=GetNestedType(name, Type.DeclaredOnlyLookup);
+            var nt=GetNestedType(name, DeclaredOnlyLookup);
             if(nt == null){
                 return null; //the extension method GetTypeInfo throws for null
             }else{
@@ -114,7 +126,7 @@ namespace System.Reflection
         }
         public virtual PropertyInfo GetDeclaredProperty(String name)
         {
-            return GetProperty(name, Type.DeclaredOnlyLookup);
+            return GetProperty(name, DeclaredOnlyLookup);
         }
 
 
@@ -127,7 +139,7 @@ namespace System.Reflection
         {
             get
             {
-                return GetConstructors(Type.DeclaredOnlyLookup);
+                return GetConstructors(DeclaredOnlyLookup);
             }
         }
 
@@ -135,7 +147,7 @@ namespace System.Reflection
         {
             get
             {
-                return GetEvents(Type.DeclaredOnlyLookup);
+                return GetEvents(DeclaredOnlyLookup);
             }
         }
 
@@ -143,7 +155,7 @@ namespace System.Reflection
         {
             get
             {
-                return GetFields(Type.DeclaredOnlyLookup);
+                return GetFields(DeclaredOnlyLookup);
             }
         }
 
@@ -151,7 +163,7 @@ namespace System.Reflection
         {
             get
             {
-                return GetMembers(Type.DeclaredOnlyLookup);
+                return GetMembers(DeclaredOnlyLookup);
             }
         }
 
@@ -159,14 +171,14 @@ namespace System.Reflection
         {
             get
             {
-                return GetMethods(Type.DeclaredOnlyLookup);
+                return GetMethods(DeclaredOnlyLookup);
             }
         }
         public virtual IEnumerable<System.Reflection.TypeInfo> DeclaredNestedTypes
         {
             get
             {
-                foreach (var t in GetNestedTypes(Type.DeclaredOnlyLookup)){
+                foreach (var t in GetNestedTypes(DeclaredOnlyLookup)){
 	        		yield return t.GetTypeInfo();
     		    }
             }
@@ -176,7 +188,7 @@ namespace System.Reflection
         {
             get
             {
-                return GetProperties(Type.DeclaredOnlyLookup);
+                return GetProperties(DeclaredOnlyLookup);
             }
         }
 
