@@ -16,7 +16,9 @@ namespace System.Collections.ObjectModel
 
     [Serializable]
     [System.Runtime.InteropServices.ComVisible(false)]
+    #if !NETSTANDARD_SHIM
     [DebuggerTypeProxy(typeof(Mscorlib_CollectionDebugView<>))]
+    #endif
     [DebuggerDisplay("Count = {Count}")]    
     public class ReadOnlyCollection<T>: IList<T>, IList, IReadOnlyList<T>
     {
@@ -26,7 +28,11 @@ namespace System.Collections.ObjectModel
 
         public ReadOnlyCollection(IList<T> list) {
             if (list == null) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.list);
+                #else
+                throw new ArgumentNullException(nameof(list));
+                #endif
             }
             this.list = list;
         }
@@ -68,29 +74,53 @@ namespace System.Collections.ObjectModel
         T IList<T>.this[int index] {
             get { return list[index]; }
             set { 
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
         }
 
         void ICollection<T>.Add(T value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
         
         void ICollection<T>.Clear() {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         void IList<T>.Insert(int index, T value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         bool ICollection<T>.Remove(T value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
             return false;
         }
 
         void IList<T>.RemoveAt(int index) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -118,23 +148,43 @@ namespace System.Collections.ObjectModel
 
         void ICollection.CopyTo(Array array, int index) {
             if (array==null) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
+                #else
+                throw new ArgumentNullException(nameof(array));
+                #endif
             }
 
             if (array.Rank != 1) {
-                ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_RankMultiDimNotSupported);                
+                #if !NETSTANDARD_SHIM
+                ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_RankMultiDimNotSupported);     
+                #else // TODO: fix exception message
+                throw new ArgumentException("Multidimensional arrays are not supported.", nameof(array));
+                #endif           
             }
 
             if( array.GetLowerBound(0) != 0 ) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_NonZeroLowerBound);
+                #else // TODO: fix exception message
+                throw new ArgumentException("Arg_NonZeroLowerBound.", nameof(array));
+                #endif
             }
             
             if (index < 0) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.arrayIndex, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                #else // TODO: fix exception message
+                throw new ArgumentOutOfRangeException(nameof(index));
+                #endif
             }
 
             if (array.Length - index < Count) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_ArrayPlusOffTooSmall);
+                #else // TODO: fix exception message
+                throw new ArgumentException("ArrayPlusOffTooSmall", nameof(array));
+                #endif
             }
 
             T[] items = array as T[];
@@ -151,7 +201,11 @@ namespace System.Collections.ObjectModel
                 Type targetType = array.GetType().GetElementType(); 
                 Type sourceType = typeof(T);
                 if(!(targetType.IsAssignableFrom(sourceType) || sourceType.IsAssignableFrom(targetType))) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                    #else // TODO: fix exception message
+                    throw new ArgumentException("InvalidArrayType", nameof(array));
+                    #endif
                 }
 
                 //
@@ -160,7 +214,11 @@ namespace System.Collections.ObjectModel
                 //
                 object[] objects = array as object[];
                 if( objects == null) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                    #else // TODO: fix exception message
+                    throw new ArgumentException("InvalidArrayType", nameof(array));
+                    #endif
                 }
 
                 int count = list.Count;
@@ -170,7 +228,11 @@ namespace System.Collections.ObjectModel
                     }
                 }
                 catch(ArrayTypeMismatchException) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                    #else // TODO: fix exception message
+                    throw new ArgumentException("InvalidArrayType", nameof(array));
+                    #endif
                 }
             }
         }
@@ -186,17 +248,29 @@ namespace System.Collections.ObjectModel
         object IList.this[int index] {
             get { return list[index]; }
             set { 
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
         }
 
         int IList.Add(object value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
             return -1;
         }
 
         void IList.Clear() {
-            ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);            
+            #if !NETSTANDARD_SHIM
+            ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);    
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif        
         }
 
         private static bool IsCompatibleObject(object value) {
@@ -220,15 +294,27 @@ namespace System.Collections.ObjectModel
         }
 
         void IList.Insert(int index, object value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         void IList.Remove(object value) {
-            ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);            
+            #if !NETSTANDARD_SHIM
+            ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection); 
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif           
         }
 
         void IList.RemoveAt(int index) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }    
     }
 }

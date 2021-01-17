@@ -22,7 +22,9 @@ namespace System.Collections.ObjectModel
     using System.Diagnostics.Contracts;
 
     [Serializable]
+    #if !NETSTANDARD_SHIM
     [DebuggerTypeProxy(typeof(Mscorlib_DictionaryDebugView<,>))]
+    #endif
     [DebuggerDisplay("Count = {Count}")]
     public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue>
     {
@@ -95,11 +97,19 @@ namespace System.Collections.ObjectModel
         }
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
             return false;
         }
 
@@ -108,7 +118,11 @@ namespace System.Collections.ObjectModel
                 return m_dictionary[key];
             }
             set {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
         }
 
@@ -133,15 +147,27 @@ namespace System.Collections.ObjectModel
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Clear() {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
             return false;
         }
 
@@ -167,17 +193,29 @@ namespace System.Collections.ObjectModel
 
         private static bool IsCompatibleKey(object key) {
             if (key == null) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key);
+                #else
+                throw new ArgumentNullException(nameof(key));
+                #endif
             }
             return key is TKey;
         }
 
         void IDictionary.Add(object key, object value) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         void IDictionary.Clear() {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         bool IDictionary.Contains(object key) {
@@ -207,7 +245,11 @@ namespace System.Collections.ObjectModel
         }
 
         void IDictionary.Remove(object key) {
+            #if !NETSTANDARD_SHIM
             ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+            #else // TODO: fix exception message
+            throw new NotSupportedException();
+            #endif
         }
 
         ICollection IDictionary.Values {
@@ -224,29 +266,53 @@ namespace System.Collections.ObjectModel
                 return null;
             }
             set {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
         }
 
         void ICollection.CopyTo(Array array, int index) {
             if (array == null) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
+                #else
+                throw new ArgumentNullException(nameof(array));
+                #endif
             }
 
             if (array.Rank != 1) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_RankMultiDimNotSupported);
+                #else // TODO: fix exception message
+                throw new ArgumentException("Multidimensional arrays are not supported.", nameof(array));
+                #endif
             }
 
             if (array.GetLowerBound(0) != 0) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_NonZeroLowerBound);
+                #else // TODO: fix exception message
+                throw new ArgumentException("Arg_NonZeroLowerBound.", nameof(array));
+                #endif
             }
 
             if (index < 0 || index > array.Length) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.index, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                #else // TODO: fix exception message
+                throw new ArgumentOutOfRangeException(nameof(index));
+                #endif
             }
 
             if (array.Length - index < Count) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_ArrayPlusOffTooSmall);
+                #else // TODO: fix exception message
+                throw new ArgumentException("ArrayPlusOffTooSmall", nameof(array));
+                #endif
             }
 
             KeyValuePair<TKey, TValue>[] pairs = array as KeyValuePair<TKey, TValue>[];
@@ -263,7 +329,11 @@ namespace System.Collections.ObjectModel
                 else {
                     object[] objects = array as object[];
                     if (objects == null) {
+                        #if !NETSTANDARD_SHIM
                         ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                        #else // TODO: fix exception message
+                        throw new ArgumentException("InvalidArrayType", nameof(array));
+                        #endif
                     }
 
                     try {
@@ -272,7 +342,11 @@ namespace System.Collections.ObjectModel
                         }
                     }
                     catch (ArrayTypeMismatchException) {
+                        #if !NETSTANDARD_SHIM
                         ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                        #else // TODO: fix exception message
+                        throw new ArgumentException("InvalidArrayType", nameof(array));
+                        #endif
                     }
                 }
             }
@@ -350,7 +424,9 @@ namespace System.Collections.ObjectModel
 
         #endregion IReadOnlyDictionary members
 
+        #if !NETSTANDARD_SHIM
         [DebuggerTypeProxy(typeof(Mscorlib_CollectionDebugView<>))]
+        #endif
         [DebuggerDisplay("Count = {Count}")]
         [Serializable]
         public sealed class KeyCollection : ICollection<TKey>, ICollection, IReadOnlyCollection<TKey> {
@@ -361,7 +437,11 @@ namespace System.Collections.ObjectModel
             internal KeyCollection(ICollection<TKey> collection)
             {
                 if (collection == null) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentNullException(ExceptionArgument.collection);
+                    #else // TODO: fix exception message
+                    throw new ArgumentNullException(nameof(collection));
+                    #endif
                 }
                 m_collection = collection;
             }
@@ -370,12 +450,20 @@ namespace System.Collections.ObjectModel
 
             void ICollection<TKey>.Add(TKey item)
             {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
 
             void ICollection<TKey>.Clear()
             {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
 
             bool ICollection<TKey>.Contains(TKey item)
@@ -398,7 +486,11 @@ namespace System.Collections.ObjectModel
 
             bool ICollection<TKey>.Remove(TKey item)
             {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
                 return false;
             }
 
@@ -449,7 +541,9 @@ namespace System.Collections.ObjectModel
             #endregion
         }
 
+        #if !NETSTANDARD_SHIM
         [DebuggerTypeProxy(typeof(Mscorlib_CollectionDebugView<>))]
+        #endif
         [DebuggerDisplay("Count = {Count}")]
         [Serializable]
         public sealed class ValueCollection : ICollection<TValue>, ICollection, IReadOnlyCollection<TValue> {
@@ -460,7 +554,11 @@ namespace System.Collections.ObjectModel
             internal ValueCollection(ICollection<TValue> collection)
             {
                 if (collection == null) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentNullException(ExceptionArgument.collection);
+                    #else // TODO: fix exception message
+                    throw new ArgumentNullException(nameof(collection));
+                    #endif
                 }
                 m_collection = collection;
             }
@@ -469,12 +567,20 @@ namespace System.Collections.ObjectModel
 
             void ICollection<TValue>.Add(TValue item)
             {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
 
             void ICollection<TValue>.Clear()
             {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
             }
 
             bool ICollection<TValue>.Contains(TValue item)
@@ -497,7 +603,11 @@ namespace System.Collections.ObjectModel
 
             bool ICollection<TValue>.Remove(TValue item)
             {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowNotSupportedException(ExceptionResource.NotSupported_ReadOnlyCollection);
+                #else // TODO: fix exception message
+                throw new NotSupportedException();
+                #endif
                 return false;
             }
 
@@ -558,23 +668,43 @@ namespace System.Collections.ObjectModel
         internal static void CopyToNonGenericICollectionHelper<T>(ICollection<T> collection, Array array, int index)
         {
             if (array == null) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
+                    #else // TODO: fix exception message
+                    throw new ArgumentNullException(nameof(array));
+                    #endif
             }
 
             if (array.Rank != 1) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_RankMultiDimNotSupported);
+                #else // TODO: fix exception message
+                throw new ArgumentException("RankMultiDimNotSupported", nameof(array));
+                #endif
             }
 
             if (array.GetLowerBound(0) != 0) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_NonZeroLowerBound);
+                #else // TODO: fix exception message
+                throw new ArgumentException("NonZeroLowerBound", nameof(array));
+                #endif
             }
 
             if (index < 0) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.arrayIndex, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                #else // TODO: fix exception message
+                throw new ArgumentOutOfRangeException(nameof(index));
+                #endif
             }
 
             if (array.Length - index < collection.Count) {
+                #if !NETSTANDARD_SHIM
                 ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_ArrayPlusOffTooSmall);
+                #else // TODO: fix exception message
+                throw new ArgumentException("ArrayPlusOffTooSmall", nameof(index));
+                #endif
             }
 
             // Easy out if the ICollection<T> implements the non-generic ICollection
@@ -598,7 +728,11 @@ namespace System.Collections.ObjectModel
                 Type targetType = array.GetType().GetElementType();
                 Type sourceType = typeof(T);
                 if (!(targetType.IsAssignableFrom(sourceType) || sourceType.IsAssignableFrom(targetType))) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                    #else // TODO: fix exception message
+                    throw new ArgumentException("InvalidArrayType", nameof(array));
+                    #endif
                 }
 
                 //
@@ -607,7 +741,11 @@ namespace System.Collections.ObjectModel
                 //
                 object[] objects = array as object[];
                 if (objects == null) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                    #else // TODO: fix exception message
+                    throw new ArgumentException("InvalidArrayType", nameof(array));
+                    #endif
                 }
 
                 try {
@@ -616,7 +754,11 @@ namespace System.Collections.ObjectModel
                     }
                 }
                 catch (ArrayTypeMismatchException) {
+                    #if !NETSTANDARD_SHIM
                     ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
+                    #else // TODO: fix exception message
+                    throw new ArgumentException("InvalidArrayType", nameof(array));
+                    #endif
                 }
             }
         }
