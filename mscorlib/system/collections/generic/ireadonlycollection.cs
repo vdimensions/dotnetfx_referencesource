@@ -12,9 +12,11 @@
 ** Purpose: Base interface for read-only generic lists.
 ** 
 ===========================================================*/
+#if !NETSTANDARD_SHIM
 using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+#endif
 
 namespace System.Collections.Generic
 {
@@ -26,12 +28,18 @@ namespace System.Collections.Generic
     // without jitting.  Hence the TypeDependencyAttribute on SZArrayHelper.
     // This is a special hack internally though - see VM\compile.cpp.
     // The same attribute is on IList<T>, IEnumerable<T>, ICollection<T>, and IReadOnlyList<T>.
+    #if !NETSTANDARD_SHIM
     [TypeDependencyAttribute("System.SZArrayHelper")]
+    #endif
 #if CONTRACTS_FULL
     [ContractClass(typeof(IReadOnlyCollectionContract<>))]
 #endif
     // If we ever implement more interfaces on IReadOnlyCollection, we should also update RuntimeTypeCache.PopulateInterfaces() in rttype.cs
+    #if NET40_OR_NEWER
     public interface IReadOnlyCollection<out T> : IEnumerable<T>
+    #else
+    public interface IReadOnlyCollection<T> : IEnumerable<T>
+    #endif
     {
         int Count { get; }
     }
